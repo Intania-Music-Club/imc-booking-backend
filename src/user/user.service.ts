@@ -33,7 +33,6 @@ export class UserService {
           name: true,
           bookingHistory: {
             select: {
-              bookingId: true,
               bookingDate: true,
               bookingTimeIndex: true,
               event: true,
