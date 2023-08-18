@@ -12,7 +12,6 @@ import { UserModule } from './user/user.module';
     BookingModule,
     AdminModule,
     ConfigModule.forRoot({
-      envFilePath: `.env.${process.env.NODE_ENV}`,
       isGlobal: true,
     }),
   ],
