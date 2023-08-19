@@ -6,15 +6,33 @@ import { UserDTO } from './types/user.dto';
 export class UserService {
   constructor(private prisma: PrismaService) {}
 
-  createUser(payload: UserDTO) {
+  async createUser(payload: UserDTO) {
     try {
-      const user = this.prisma.user.create({
+      const xprisma = await this.prisma.$extends({
+        result: {
+          user: {
+            isSuccess: {
+              needs: { userId: true },
+              compute(userId) {
+                if (userId) {
+                  return true;
+                } else {
+                  return false;
+                }
+              },
+            },
+          },
+        },
+      });
+
+      const user = await xprisma.user.create({
         data: {
           ...payload,
         },
       });
+
       return user;
-    } catch (error) {
+    } catch (e) {
       throw new BadRequestException({
         err: error.message,
       });
