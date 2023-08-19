@@ -9,4 +9,9 @@ export class AdminController {
   confirmBookingById(@Param('id') id: string) {
     return this.adminService.confirmBookingById(id);
   }
+
+  @Patch('/cancelbooking/:id')
+  cancelBookingById(@Param('id') id: string) {
+    return this.adminService.cancelBookingById(id);
+  }
 }
