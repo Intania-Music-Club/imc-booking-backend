@@ -23,4 +23,23 @@ export class AdminService {
       });
     }
   }
+
+  cancelBookingById(id: string) {
+    try {
+      const user = this.prisma.booking.update({
+        where: {
+          bookingId: id,
+        },
+        data: {
+          bookingStatus: 'cancel',
+        },
+      });
+
+      return user;
+    } catch (error) {
+      throw new BadRequestException({
+        err: error.message,
+      });
+    }
+  }
 }
