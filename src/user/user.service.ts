@@ -34,7 +34,8 @@ export class UserService {
       return user;
     } catch (e) {
       throw new BadRequestException({
-        err: error.message,
+        error: `${e.meta.target} must be unique`,
+        isSucess: false,
       });
     }
   }
