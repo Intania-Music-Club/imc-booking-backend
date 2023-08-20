@@ -20,9 +20,9 @@ export class AdminService {
     },
   });
 
-  confirmBookingById(id: string) {
+  async confirmBookingById(id: string) {
     try {
-      const booking = this.xprisma.booking.update({
+      const booking = await this.xprisma.booking.update({
         where: {
           bookingId: id,
         },
@@ -31,14 +31,18 @@ export class AdminService {
         },
       });
 
-      if (!booking) {
-        throw 'Booking not found';
-      }
-
       return booking;
     } catch (e) {
+      let errMsg = e.meta.cause;
+
+      switch (e.code) {
+        case 'P2025': {
+          errMsg = 'Booking to update is not found';
+        }
+      }
+
       throw new BadRequestException({
-        error: e,
+        error: errMsg,
         isSucess: false,
       });
     }
