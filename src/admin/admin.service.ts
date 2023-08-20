@@ -5,9 +5,24 @@ import { PrismaService } from 'src/prisma/prisma.service';
 export class AdminService {
   constructor(private prisma: PrismaService) {}
 
-  confirmBookingById(id: string) {
+  private xprisma = this.prisma.$extends({
+    result: {
+      booking: {
+        isSuccess: {
+          needs: { bookingId: true },
+          compute(bookingId) {
+            if (bookingId) {
+              return true;
+            }
+          },
+        },
+      },
+    },
+  });
+
+  async confirmBookingById(id: string) {
     try {
-      const user = this.prisma.booking.update({
+      const booking = await this.xprisma.booking.update({
         where: {
           bookingId: id,
         },
@@ -16,17 +31,26 @@ export class AdminService {
         },
       });
 
-      return user;
-    } catch (error) {
+      return booking;
+    } catch (e) {
+      let errMsg = e.meta.cause;
+
+      switch (e.code) {
+        case 'P2025': {
+          errMsg = 'Booking to confirm is not found';
+        }
+      }
+
       throw new BadRequestException({
-        err: error.message,
+        error: errMsg,
+        isSucess: false,
       });
     }
   }
 
-  cancelBookingById(id: string) {
+  async cancelBookingById(id: string) {
     try {
-      const user = this.prisma.booking.update({
+      const booking = await this.xprisma.booking.update({
         where: {
           bookingId: id,
         },
@@ -35,10 +59,19 @@ export class AdminService {
         },
       });
 
-      return user;
-    } catch (error) {
+      return booking;
+    } catch (e) {
+      let errMsg = e.meta.cause;
+
+      switch (e.code) {
+        case 'P2025': {
+          errMsg = 'Booking to cancel is not found';
+        }
+      }
+
       throw new BadRequestException({
-        err: error.message,
+        error: errMsg,
+        isSucess: false,
       });
     }
   }
