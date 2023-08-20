@@ -20,9 +20,9 @@ export class AdminService {
     },
   });
 
-  confirmBookingById(id: string) {
+  async confirmBookingById(id: string) {
     try {
-      const booking = this.xprisma.booking.update({
+      const booking = await this.xprisma.booking.update({
         where: {
           bookingId: id,
         },
@@ -31,22 +31,26 @@ export class AdminService {
         },
       });
 
-      if (!booking) {
-        throw 'Booking not found';
-      }
-
       return booking;
     } catch (e) {
+      let errMsg = e.meta.cause;
+
+      switch (e.code) {
+        case 'P2025': {
+          errMsg = 'Booking to confirm is not found';
+        }
+      }
+
       throw new BadRequestException({
-        error: e,
+        error: errMsg,
         isSucess: false,
       });
     }
   }
 
-  cancelBookingById(id: string) {
+  async cancelBookingById(id: string) {
     try {
-      const user = this.prisma.booking.update({
+      const booking = await this.xprisma.booking.update({
         where: {
           bookingId: id,
         },
@@ -55,10 +59,19 @@ export class AdminService {
         },
       });
 
-      return user;
-    } catch (error) {
+      return booking;
+    } catch (e) {
+      let errMsg = e.meta.cause;
+
+      switch (e.code) {
+        case 'P2025': {
+          errMsg = 'Booking to cancel is not found';
+        }
+      }
+
       throw new BadRequestException({
-        err: error.message,
+        error: errMsg,
+        isSucess: false,
       });
     }
   }
