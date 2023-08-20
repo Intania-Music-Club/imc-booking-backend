@@ -26,7 +26,8 @@ model Booking {
 
 model User {
   userId         String    @id @default(uuid()) @map("_id")
-  lineId         String    @unique
+  lineUserId     String    @unique
+  profileUrl     String
   studentId      String    @unique
   name           String
   nickname       String
