@@ -3,7 +3,7 @@ import { IsNotEmpty, IsString } from 'class-validator';
 export class UserDTO {
   @IsString()
   @IsNotEmpty()
-  lineId: string;
+  lineUserId: string;
 
   @IsString()
   @IsNotEmpty()
@@ -16,4 +16,7 @@ export class UserDTO {
   @IsString()
   @IsNotEmpty()
   nickname: string;
+
+  @IsString()
+  profileUrl: string;
 }

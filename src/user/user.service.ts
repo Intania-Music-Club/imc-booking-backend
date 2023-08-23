@@ -25,11 +25,11 @@ export class UserService {
         },
       });
 
-      const user = await xprisma.user.create({
-        data: {
-          ...payload,
-        },
-      });
+    const user = await xprisma.user.create({
+      data: {
+        ...payload,
+      },
+    });
 
       return user;
     } catch (e) {
