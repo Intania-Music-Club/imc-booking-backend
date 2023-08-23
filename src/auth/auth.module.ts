@@ -5,7 +5,7 @@ import { JwtModule } from '@nestjs/jwt';
 
 @Module({
   imports: [
-    JwtModule.register({ global: true, secret: 'hard!to-guess_secret' }),
+    JwtModule.register({ global: true, secret: process.env.JWT_SECRET }),
   ],
   controllers: [AuthController],
   providers: [AuthService],
