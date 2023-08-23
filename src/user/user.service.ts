@@ -6,46 +6,49 @@ import { UserDTO } from './types/user.dto';
 export class UserService {
   constructor(private prisma: PrismaService) {}
 
+  xprisma = this.prisma.$extends({
+    result: {
+      user: {
+        isSuccess: {
+          needs: { userId: true },
+          compute(userId) {
+            if (userId) {
+              return true;
+            } else {
+              return false;
+            }
+          },
+        },
+      },
+    },
+  });
+
   async createUser(payload: UserDTO) {
     try {
-      const xprisma = await this.prisma.$extends({
-        result: {
-          user: {
-            isSuccess: {
-              needs: { userId: true },
-              compute(userId) {
-                if (userId) {
-                  return true;
-                } else {
-                  return false;
-                }
-              },
-            },
-          },
+      const user = await this.xprisma.user.create({
+        data: {
+          ...payload,
         },
       });
 
-    const user = await xprisma.user.create({
-      data: {
-        ...payload,
-      },
-    });
-
       return user;
-    } catch (error) {
+    } catch (e) {
       throw new BadRequestException({
-        err: error.message,
+        err: e,
+        isSuccess: false,
       });
     }
   }
 
-  getUserInfoById(id: string) {
+  async getUserInfoById(id: string) {
     try {
-      const user = this.prisma.user.findUnique({
+      const user = await this.prisma.user.findUnique({
         where: {
           userId: id,
         },
         select: {
+          userId: true,
+          profileUrl: true,
           studentId: true,
           nickname: true,
           name: true,
@@ -61,9 +64,10 @@ export class UserService {
       });
 
       return user;
-    } catch (error) {
+    } catch (e) {
       throw new BadRequestException({
-        err: error.message,
+        err: e,
+        isSuccess: false,
       });
     }
   }
