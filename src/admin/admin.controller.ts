@@ -1,4 +1,4 @@
-import { Controller, Param, Patch } from '@nestjs/common';
+import { Controller, Get, Param, Patch } from '@nestjs/common';
 import { AdminService } from './admin.service';
 
 @Controller('admin')
@@ -13,5 +13,10 @@ export class AdminController {
   @Patch('/cancelbooking/:id')
   cancelBookingById(@Param('id') id: string) {
     return this.adminService.cancelBookingById(id);
+  }
+
+  @Get('/getbookinginfo/:id')
+  getBookingById(@Param('id') id: string) {
+    return this.adminService.getBookingById(id);
   }
 }
