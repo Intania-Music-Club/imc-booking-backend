@@ -5,6 +5,7 @@ import {
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { PrismaService } from 'src/prisma/prisma.service';
+import { SignupDTO } from './types/auth.dto';
 
 @Injectable()
 export class AuthService {
@@ -36,8 +37,6 @@ export class AuthService {
     cookieJwt: string;
   }) {
     const decoded = await this.jwtService.verifyAsync(cookieJwt);
-
-    console.log({ lineState, state: decoded.state });
 
     if (lineState !== decoded.state) throw new BadRequestException();
 
@@ -90,5 +89,35 @@ export class AuthService {
       }),
       justCreated: user.studentId === '',
     };
+  }
+
+  async signup({
+    cookieJwt,
+    studentId,
+    nickname,
+    firstName,
+    lastName,
+  }: SignupDTO & { cookieJwt: string }) {
+    let decoded;
+    try {
+      decoded = await this.jwtService.verifyAsync(cookieJwt);
+    } catch (e) {
+      throw new UnauthorizedException();
+    }
+
+    const userId = decoded.userId;
+
+    // validate user input
+
+    const result = await this.prisma.user.update({
+      where: { userId: userId },
+      data: {
+        studentId,
+        nickname,
+        name: `${firstName} ${lastName}`,
+      },
+    });
+
+    return result;
   }
 }
