@@ -1,7 +1,7 @@
 import { Body, Controller, Get, Post, Req, Res } from '@nestjs/common';
 import { Request, Response } from 'express';
 import { AuthService } from './auth.service';
-import { LoginDTO } from './types/auth.dto';
+import { LoginDTO, SignupDTO } from './types/auth.dto';
 
 @Controller('auth')
 export class AuthController {
@@ -37,5 +37,18 @@ export class AuthController {
       message: 'ok',
       redirect: `${process.env.FRONTEND_URI}${justCreated ? '/signup' : '/'}`,
     };
+  }
+
+  @Post('signup')
+  async signup(
+    @Req() request: Request,
+    @Body() body: SignupDTO,
+    @Res({ passthrough: true }) response: Response,
+  ) {
+    const cookieJwt = request.cookies['auth'];
+
+    const user = await this.loginService.signup({ cookieJwt, ...body });
+
+    return { message: 'ok', user };
   }
 }
